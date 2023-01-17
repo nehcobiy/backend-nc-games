@@ -8,6 +8,10 @@ exports.getCategories = (request, response, next) => {
     .catch(next);
 };
 
-exports.getReviews = (request, response) => {
-  response.status(200).send([]);
+exports.getReviews = (request, response, next) => {
+  fetchAllReviews()
+    .then((reviews) => {
+      response.status(200).send(reviews);
+    })
+    .catch(next);
 };
