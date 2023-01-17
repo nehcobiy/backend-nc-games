@@ -5,3 +5,5 @@ exports.fetchAllCategories = () => {
     return response.rows;
   });
 };
+
+exports.fetchAllReviews = () => {};
