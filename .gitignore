@@ -1,3 +1,4 @@
 node_modules
 .env.*
 check-devtables.sql
+tables.txt

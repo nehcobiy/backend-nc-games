@@ -25,7 +25,15 @@ describe("app", () => {
           expect(Array.isArray(body)).toBe(true);
         });
     });
-    test("arry of category objects contain the correct properties", () => {
+    test("all objects returned in array", () => {
+      return request(app)
+        .get("/api/categories")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.length).toBe(4);
+        });
+    });
+    test("array of category objects contain the correct properties", () => {
       return request(app)
         .get("/api/categories")
         .expect(200)
