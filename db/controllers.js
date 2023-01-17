@@ -1,4 +1,4 @@
-const { fetchAllCategories, fetchAllReviews } = require("./model");
+const { fetchAllCategories } = require("./model");
 
 exports.getCategories = (request, response, next) => {
   fetchAllCategories()
@@ -15,3 +15,4 @@ exports.getReviews = (request, response, next) => {
     })
     .catch(next);
 };
+

@@ -18,3 +18,4 @@ exports.fetchAllReviews = () => {
     return response.rows;
   });
 };
+
