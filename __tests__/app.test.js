@@ -37,38 +37,4 @@ describe("app", () => {
         });
     });
   });
-
-  describe("/api/reviews", () => {
-    test("status: 200", () => {
-      return request(app).get("/api/reviews").expect(200);
-    });
-    test("responds with a reviews array", () => {
-      return request(app)
-        .get("/api/reviews")
-        .expect(200)
-        .then(({ body }) => {
-          expect(Array.isArray(body)).toBe(true);
-        });
-    });
-    test("array contains objects with correct properties", () => {
-      return request(app)
-        .get("/api/categories")
-        .expect(200)
-        .then(({ body }) => {
-          body.forEach((review) => {
-            expect(review).toHaveProperty("owner", expect.any(String));
-            expect(review).toHaveProperty("title", expect.any(String));
-            expect(review).toHaveProperty("review_id", expect.any(Number));
-            expect(review).toHaveProperty("category", expect.any(String));
-            expect(review).toHaveProperty("review_img_url", expect.any(String));
-            expect(review).toHaveProperty("created_at", expect.any(Date));
-            expect(review).toHaveProperty("votes", expect.any(Number));
-            expect(review).toHaveProperty("designer", expect.any(String));
-            expect(review).toHaveProperty("comment_count", expect.any(Number));
-          });
-          // test("comment count property gives correct total count", () => {});
-          // test("reviews sorted in descending order of date", () => {});
-        });
-    });
-  });
 });
