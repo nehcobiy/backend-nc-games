@@ -94,4 +94,63 @@ describe("app", () => {
         });
     });
   });
+  describe("/api/reviews/:review_id", () => {
+    test("status: 200", () => {
+      return request(app).get("/api/reviews/1").expect(200);
+    });
+    test("returns review object containing the correct properties", () => {
+      return request(app)
+        .get("/api/reviews/1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.review).toHaveProperty("review_id", expect.any(Number));
+          expect(body.review).toHaveProperty("title", expect.any(String));
+          expect(body.review).toHaveProperty("review_body", expect.any(String));
+          expect(body.review).toHaveProperty("designer", expect.any(String));
+          expect(body.review).toHaveProperty(
+            "review_img_url",
+            expect.any(String)
+          );
+          expect(body.review).toHaveProperty("votes", expect.any(Number));
+          expect(body.review).toHaveProperty("category", expect.any(String));
+          expect(body.review).toHaveProperty("owner", expect.any(String));
+          expect(body.review).toHaveProperty("created_at", expect.any(String));
+        });
+    });
+    test("returns the correct review", () => {
+      return request(app)
+        .get("/api/reviews/1")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.review).toEqual({
+            review_id: 1,
+            title: "Agricola",
+            review_body: "Farmyard fun!",
+            designer: "Uwe Rosenberg",
+            review_img_url:
+              "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+            votes: 1,
+            category: "euro game",
+            owner: "mallionaire",
+            created_at: `2021-01-18T10:00:20.514Z`,
+          });
+        });
+    });
+    test("status: 400 bad request, invalid ID type", () => {
+      return request(app)
+        .get("/api/reviews/notAnID")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request: invalid input");
+        });
+    });
+    test("status: 404 not found, valid ID but does not exist", () => {
+      return request(app)
+        .get("/api/reviews/9999999")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("input not found");
+        });
+    });
+  });
 });
