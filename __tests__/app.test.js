@@ -94,7 +94,7 @@ describe("app", () => {
         });
     });
   });
-  describe.only("/api/reviews/:review_id", () => {
+  describe("/api/reviews/:review_id", () => {
     test("status: 200", () => {
       return request(app).get("/api/reviews/1").expect(200);
     });
@@ -103,15 +103,18 @@ describe("app", () => {
         .get("/api/reviews/1")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toHaveProperty("review_id", expect.any(Number));
-          expect(body).toHaveProperty("title", expect.any(String));
-          expect(body).toHaveProperty("review_body", expect.any(String));
-          expect(body).toHaveProperty("designer", expect.any(String));
-          expect(body).toHaveProperty("review_img_url", expect.any(String));
-          expect(body).toHaveProperty("votes", expect.any(Number));
-          expect(body).toHaveProperty("category", expect.any(String));
-          expect(body).toHaveProperty("owner", expect.any(String));
-          expect(body).toHaveProperty("created_at", expect.any(String));
+          expect(body.review).toHaveProperty("review_id", expect.any(Number));
+          expect(body.review).toHaveProperty("title", expect.any(String));
+          expect(body.review).toHaveProperty("review_body", expect.any(String));
+          expect(body.review).toHaveProperty("designer", expect.any(String));
+          expect(body.review).toHaveProperty(
+            "review_img_url",
+            expect.any(String)
+          );
+          expect(body.review).toHaveProperty("votes", expect.any(Number));
+          expect(body.review).toHaveProperty("category", expect.any(String));
+          expect(body.review).toHaveProperty("owner", expect.any(String));
+          expect(body.review).toHaveProperty("created_at", expect.any(String));
         });
     });
     test("returns the correct review", () => {
@@ -119,7 +122,7 @@ describe("app", () => {
         .get("/api/reviews/1")
         .expect(200)
         .then(({ body }) => {
-          expect(body).toEqual({
+          expect(body.review).toEqual({
             review_id: 1,
             title: "Agricola",
             review_body: "Farmyard fun!",
