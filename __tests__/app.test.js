@@ -3,6 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+require("jest-sorted");
 
 beforeEach(() => {
   return seed(testData);
@@ -49,12 +50,12 @@ describe("app", () => {
     test("status: 200", () => {
       return request(app).get("/api/reviews").expect(200);
     });
-    test("responds with a reviews array", () => {
+    test("responds with reviews object containing reviews array", () => {
       return request(app)
         .get("/api/reviews")
         .expect(200)
         .then(({ body }) => {
-          expect(Array.isArray(body)).toBe(true);
+          expect(Array.isArray(body.reviews)).toBe(true);
         });
     });
     test("all objects returned in array", () => {
@@ -62,7 +63,7 @@ describe("app", () => {
         .get("/api/reviews")
         .expect(200)
         .then(({ body }) => {
-          expect(body.length).toBe(13);
+          expect(body.reviews.length).toBe(13);
         });
     });
     test("array contains objects with correct properties", () => {
@@ -70,7 +71,8 @@ describe("app", () => {
         .get("/api/reviews")
         .expect(200)
         .then(({ body }) => {
-          body.forEach((review) => {
+          expect(body.reviews.length).toBe(13);
+          body.reviews.forEach((review) => {
             expect(review).toHaveProperty("owner", expect.any(String));
             expect(review).toHaveProperty("title", expect.any(String));
             expect(review).toHaveProperty("review_id", expect.any(Number));
@@ -88,7 +90,7 @@ describe("app", () => {
         .get("/api/reviews")
         .expect(200)
         .then(({ body }) => {
-          expect(body[0]["created_at"]).toBe("2021-01-25T11:16:54.963Z");
+          expect(body.reviews).toBeSortedBy("created_at", { descending: true });
         });
     });
   });
