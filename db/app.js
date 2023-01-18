@@ -8,4 +8,6 @@ app.use((err, request, response, next) => {
   console.log(err);
 });
 
+app.get("/api/reviews", getReviews);
+
 module.exports = app;
