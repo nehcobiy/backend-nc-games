@@ -32,3 +32,17 @@ exports.fetchReviewById = (id) => {
     }
   });
 };
+
+exports.fetchCommentsByReviewId = (id) => {
+  const query = `SELECT comment_id, votes, created_at, author, body, review_id
+  FROM comments
+  WHERE review_id = $1
+  ORDER BY created_at DESC`;
+
+  return db.query(query, [id]).then(({ rowCount, rows }) => {
+    console.log(rowCount, rows);
+    if (rowCount === 0) {
+      return Promise.reject({ status: 404 });
+    } else return rows;
+  });
+};
