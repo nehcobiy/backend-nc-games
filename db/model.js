@@ -40,9 +40,17 @@ exports.fetchCommentsByReviewId = (id) => {
   ORDER BY created_at DESC`;
 
   return db.query(query, [id]).then(({ rowCount, rows }) => {
-    console.log(rowCount, rows);
     if (rowCount === 0) {
       return Promise.reject({ status: 404 });
     } else return rows;
   });
+};
+
+exports.insertComment = (newComment, id) => {
+  const query = `INSERT INTO comments (body, author, review_id) VALUES ($1, (SELECT username FROM users WHERE username = $2), $3) RETURNING *;`;
+  return db
+    .query(query, [newComment.body, newComment.username, id])
+    .then(({ rows }) => {
+      return rows[0];
+    });
 };

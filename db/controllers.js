@@ -3,6 +3,7 @@ const {
   fetchAllReviews,
   fetchReviewById,
   fetchCommentsByReviewId,
+  insertComment,
 } = require("./model");
 
 exports.getCategories = (request, response, next) => {
@@ -34,8 +35,20 @@ exports.getCommentsByReviewId = (request, response, next) => {
   const { review_id } = request.params;
   fetchCommentsByReviewId(review_id)
     .then((comments) => {
-      console.log(comments);
       response.status(200).send(comments);
+    })
+    .catch(next);
+};
+
+exports.postComment = (request, response, next) => {
+  const newComment = request.body;
+  const { review_id } = request.params;
+  Promise.all([
+    fetchReviewById(review_id),
+    insertComment(newComment, review_id),
+  ])
+    .then((results) => {
+      response.status(201).send(results[1]);
     })
     .catch(next);
 };

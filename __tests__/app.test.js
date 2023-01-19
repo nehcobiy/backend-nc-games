@@ -14,7 +14,7 @@ afterAll(() => {
 });
 
 describe("app", () => {
-  describe("/api/categories", () => {
+  describe("GET: /api/categories", () => {
     test("status: 200", () => {
       return request(app).get("/api/categories").expect(200);
     });
@@ -46,7 +46,7 @@ describe("app", () => {
         });
     });
   });
-  describe("/api/reviews", () => {
+  describe("GET: /api/reviews", () => {
     test("status: 200", () => {
       return request(app).get("/api/reviews").expect(200);
     });
@@ -94,7 +94,7 @@ describe("app", () => {
         });
     });
   });
-  describe("/api/reviews/:review_id", () => {
+  describe("GET: /api/reviews/:review_id", () => {
     test("status: 200", () => {
       return request(app).get("/api/reviews/1").expect(200);
     });
@@ -153,7 +153,7 @@ describe("app", () => {
         });
     });
   });
-  describe("/api/reviews/:review_id/comments", () => {
+  describe("GET: /api/reviews/:review_id/comments", () => {
     test("status: 200", () => {
       return request(app).get("/api/reviews/2/comments").expect(200);
     });
@@ -210,6 +210,70 @@ describe("app", () => {
         .expect(404)
         .then(({ body }) => {
           expect(body.msg).toBe("input not found");
+        });
+    });
+  });
+  describe("POST: /api/reviews/:review_id/comments", () => {
+    test("adds new comment to database with correct properties", () => {
+      const newComment = {
+        username: "mallionaire",
+        body: "this is a test comment",
+      };
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .send(newComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toHaveProperty("comment_id", expect.any(Number));
+          expect(body).toHaveProperty("body", expect.any(String));
+          expect(body).toHaveProperty("votes", expect.any(Number));
+          expect(body).toHaveProperty("author", expect.any(String));
+          expect(body).toHaveProperty("review_id", expect.any(Number));
+          expect(body).toHaveProperty("created_at", expect.any(String));
+        });
+    });
+    test("responds with correct posted comment", () => {
+      const newComment = {
+        username: "mallionaire",
+        body: "this is a test comment",
+      };
+      return request(app)
+        .post("/api/reviews/1/comments")
+        .send(newComment)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body.author).toBe("mallionaire");
+          expect(body.body).toBe("this is a test comment");
+          expect(body.comment_id).toBe(7);
+          expect(body.review_id).toBe(1);
+          expect(body.votes).toBe(0);
+          expect(body.created_at).toEqual(expect.any(String));
+        });
+    });
+    test("status: 400, invalid review id", () => {
+      const newComment = {
+        username: "mallionaire",
+        body: "this is a test comment",
+      };
+      return request(app)
+        .post("/api/reviews/notAnID/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request: invalid input");
+        });
+    });
+    test("status:400, invalid body", () => {
+      const newComment = {
+        username: "notUser",
+        body: "this is a test comment",
+      };
+      return request(app)
+        .post("/api/reviews/notAnID/comments")
+        .send(newComment)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request: invalid input");
         });
     });
   });
