@@ -32,3 +32,16 @@ exports.fetchReviewById = (id) => {
     }
   });
 };
+
+exports.fetchCommentsByReviewId = (id) => {
+  const query = `SELECT comment_id, votes, created_at, author, body, review_id
+  FROM comments
+  WHERE review_id = $1
+  ORDER BY created_at DESC`;
+
+  return db.query(query, [id]).then((response) => {
+    if (response.rows.length === 0) {
+      return ["no comments with this review_id"];
+    } else return response.rows;
+  });
+};

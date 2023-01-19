@@ -153,4 +153,56 @@ describe("app", () => {
         });
     });
   });
+  describe.only("/api/reviews/:review_id/comments", () => {
+    test("status: 200", () => {
+      return request(app).get("/api/reviews/1/comments").expect(200);
+    });
+    test("responds with an array", () => {
+      return request(app)
+        .get("/api/reviews/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(Array.isArray(body)).toBe(true);
+        });
+    });
+    test("no comments with specific review_id", () => {
+      return request(app)
+        .get("/api/reviews/1/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toEqual(["no comments with this review_id"]);
+        });
+    });
+    test("comment object contains the correct properties", () => {
+      return request(app)
+        .get("/api/reviews/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+          body.forEach((comment) => {
+            expect(comment).toHaveProperty("comment_id", expect.any(Number));
+            expect(comment).toHaveProperty("votes", expect.any(Number));
+            expect(comment).toHaveProperty("created_at", expect.any(String));
+            expect(comment).toHaveProperty("author", expect.any(String));
+            expect(comment).toHaveProperty("body", expect.any(String));
+            expect(comment).toHaveProperty("review_id", expect.any(Number));
+          });
+        });
+    });
+    test("correct length array returned", () => {
+      return request(app)
+        .get("/api/reviews/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.length).toBe(3);
+        });
+    });
+    test("comments sorted from most recent", () => {
+      return request(app)
+        .get("/api/reviews/2/comments")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+  });
 });
