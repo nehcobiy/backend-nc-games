@@ -153,24 +153,16 @@ describe("app", () => {
         });
     });
   });
-  describe.only("/api/reviews/:review_id/comments", () => {
+  describe("/api/reviews/:review_id/comments", () => {
     test("status: 200", () => {
-      return request(app).get("/api/reviews/1/comments").expect(200);
+      return request(app).get("/api/reviews/2/comments").expect(200);
     });
     test("responds with an array", () => {
       return request(app)
-        .get("/api/reviews/1/comments")
+        .get("/api/reviews/2/comments")
         .expect(200)
         .then(({ body }) => {
           expect(Array.isArray(body)).toBe(true);
-        });
-    });
-    test("no comments with specific review_id", () => {
-      return request(app)
-        .get("/api/reviews/1/comments")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body).toEqual(["no comments with this review_id"]);
         });
     });
     test("comment object contains the correct properties", () => {
@@ -202,6 +194,22 @@ describe("app", () => {
         .expect(200)
         .then(({ body }) => {
           expect(body).toBeSortedBy("created_at", { descending: true });
+        });
+    });
+    test("status:400, invalid path", () => {
+      return request(app)
+        .get("/api/reviews/notAnID/comments")
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request: invalid input");
+        });
+    });
+    test("status: 404, valid ID but comment does not exist", () => {
+      return request(app)
+        .get("/api/reviews/1/comments")
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("input not found");
         });
     });
   });

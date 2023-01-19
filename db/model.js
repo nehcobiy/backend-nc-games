@@ -39,9 +39,10 @@ exports.fetchCommentsByReviewId = (id) => {
   WHERE review_id = $1
   ORDER BY created_at DESC`;
 
-  return db.query(query, [id]).then((response) => {
-    if (response.rows.length === 0) {
-      return ["no comments with this review_id"];
-    } else return response.rows;
+  return db.query(query, [id]).then(({ rowCount, rows }) => {
+    console.log(rowCount, rows);
+    if (rowCount === 0) {
+      return Promise.reject({ status: 404 });
+    } else return rows;
   });
 };
