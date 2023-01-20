@@ -59,8 +59,7 @@ exports.patchReview = (request, response, next) => {
   const { review_id } = request.params;
   Promise.all([fetchReviewById(review_id), updateReview(body, review_id)])
     .then((results) => {
-      console.log(results);
-      response.status(201).send(results[1]);
+      response.status(200).send({ review: results[1] });
     })
     .catch(next);
 };

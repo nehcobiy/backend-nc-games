@@ -81,3 +81,5 @@ exports.updateReview = (body, id) => {
     } else return rows[0];
   });
 };
+
+exports.fetchAllUsers = () => {};
