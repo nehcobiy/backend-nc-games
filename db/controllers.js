@@ -67,7 +67,6 @@ exports.patchReview = (request, response, next) => {
 
 exports.getUsers = (request, response, next) => {
   fetchAllUsers().then((users) => {
-    console.log(users);
     response.status(200).send(users);
   });
 };

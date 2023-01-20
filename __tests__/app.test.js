@@ -395,7 +395,7 @@ describe("app", () => {
         });
     });
   });
-  describe.only("GET: /api/users", () => {
+  describe("GET: /api/users", () => {
     test("returns an array of user objects", () => {
       return request(app)
         .get("/api/users")
