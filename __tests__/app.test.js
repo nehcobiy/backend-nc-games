@@ -40,6 +40,7 @@ describe("app", () => {
         .get("/api/categories")
         .expect(200)
         .then(({ body }) => {
+          expect(body.length).toBeGreaterThan(0);
           body.forEach((category) => {
             expect(category).toHaveProperty("slug", expect.any(String));
             expect(category).toHaveProperty("description", expect.any(String));
@@ -171,6 +172,7 @@ describe("app", () => {
         .get("/api/reviews/2/comments")
         .expect(200)
         .then(({ body }) => {
+          expect(body.length).toBeGreaterThan(0);
           body.forEach((comment) => {
             expect(comment).toHaveProperty("comment_id", expect.any(Number));
             expect(comment).toHaveProperty("votes", expect.any(Number));
@@ -409,6 +411,7 @@ describe("app", () => {
         .get("/api/users")
         .expect(200)
         .then(({ body }) => {
+          expect(body.length).toBeGreaterThan(0);
           body.forEach((user) => {
             expect(user).toHaveProperty("username", expect.any(String));
             expect(user).toHaveProperty("name", expect.any(String));
@@ -425,4 +428,7 @@ describe("app", () => {
         });
     });
   });
+  // describe("GET: /api/users, queries", () => {
+  //   test("");
+  // });
 });
