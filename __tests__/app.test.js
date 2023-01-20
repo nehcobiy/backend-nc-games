@@ -3,6 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+const { fetchAllUsers } = require("../db/model");
 require("jest-sorted");
 
 beforeEach(() => {
@@ -391,6 +392,36 @@ describe("app", () => {
           expect(body.msg).toBe(
             "Bad request: body must not contain other properties"
           );
+        });
+    });
+  });
+  describe.only("GET: /api/users", () => {
+    test("returns an array of user objects", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(Array.isArray(body)).toBe(true);
+        });
+    });
+    test("each user object contains the correct properties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          body.forEach((user) => {
+            expect(user).toHaveProperty("username", expect.any(String));
+            expect(user).toHaveProperty("name", expect.any(String));
+            expect(user).toHaveProperty("avatar_url", expect.any(String));
+          });
+        });
+    });
+    test("all objects returned in array", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.length).toBe(4);
         });
     });
   });

@@ -82,4 +82,10 @@ exports.updateReview = (body, id) => {
   });
 };
 
-exports.fetchAllUsers = () => {};
+exports.fetchAllUsers = () => {
+  return db
+    .query(`SELECT username, name, avatar_url FROM users`)
+    .then((response) => {
+      return response.rows;
+    });
+};
