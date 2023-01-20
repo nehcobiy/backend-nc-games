@@ -141,7 +141,7 @@ describe("app", () => {
         .get("/api/reviews/notAnID")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad request: invalid input");
+          expect(body.msg).toBe("Bad request");
         });
     });
     test("status: 404 not found, valid ID but does not exist", () => {
@@ -149,7 +149,7 @@ describe("app", () => {
         .get("/api/reviews/9999999")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("input not found");
+          expect(body.msg).toBe("this id does not exist");
         });
     });
   });
@@ -201,7 +201,7 @@ describe("app", () => {
         .get("/api/reviews/notAnID/comments")
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad request: invalid input");
+          expect(body.msg).toBe("Bad request");
         });
     });
     test("status: 404, valid ID but comment does not exist", () => {
@@ -209,7 +209,7 @@ describe("app", () => {
         .get("/api/reviews/1/comments")
         .expect(404)
         .then(({ body }) => {
-          expect(body.msg).toBe("input not found");
+          expect(body.msg).toBe("no comments exist for this id");
         });
     });
   });
@@ -260,7 +260,7 @@ describe("app", () => {
         .send(newComment)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad request: invalid input");
+          expect(body.msg).toBe("Bad request");
         });
     });
     test("status:400, invalid body", () => {
@@ -273,7 +273,121 @@ describe("app", () => {
         .send(newComment)
         .expect(400)
         .then(({ body }) => {
-          expect(body.msg).toBe("Bad request: invalid input");
+          expect(body.msg).toBe("Bad request");
+        });
+    });
+  });
+  describe.only("PATCH: /api/reviews/:review_id", () => {
+    test("responds with review object with the correct properties", () => {
+      const update = { inc_votes: 50 };
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(update)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toHaveProperty("review_id", expect.any(Number));
+          expect(body).toHaveProperty("title", expect.any(String));
+          expect(body).toHaveProperty("review_body", expect.any(String));
+          expect(body).toHaveProperty("designer", expect.any(String));
+          expect(body).toHaveProperty("review_img_url", expect.any(String));
+          expect(body).toHaveProperty("votes", expect.any(Number));
+          expect(body).toHaveProperty("category", expect.any(String));
+          expect(body).toHaveProperty("owner", expect.any(String));
+          expect(body).toHaveProperty("created_at", expect.any(String));
+        });
+    });
+    test("responds with review with updated values - add", () => {
+      const update = { inc_votes: 50 };
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(update)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toEqual({
+            review_id: 1,
+            title: "Agricola",
+            review_body: "Farmyard fun!",
+            designer: "Uwe Rosenberg",
+            review_img_url:
+              "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+            votes: 51,
+            category: "euro game",
+            owner: "mallionaire",
+            created_at: `2021-01-18T10:00:20.514Z`,
+          });
+        });
+    });
+    test("responds with review with updated values - minus", () => {
+      const update = { inc_votes: -1 };
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(update)
+        .expect(201)
+        .then(({ body }) => {
+          expect(body).toEqual({
+            review_id: 1,
+            title: "Agricola",
+            review_body: "Farmyard fun!",
+            designer: "Uwe Rosenberg",
+            review_img_url:
+              "https://images.pexels.com/photos/974314/pexels-photo-974314.jpeg?w=700&h=700",
+            votes: 0,
+            category: "euro game",
+            owner: "mallionaire",
+            created_at: `2021-01-18T10:00:20.514Z`,
+          });
+        });
+    });
+    test("status: 400, invalid review_id", () => {
+      const update = { inc_votes: 50 };
+      return request(app)
+        .patch("/api/reviews/notAnId")
+        .send(update)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request");
+        });
+    });
+    test("status: 404, valid but nonexistent review_id", () => {
+      const update = { inc_votes: 50 };
+      return request(app)
+        .patch("/api/reviews/99999")
+        .send(update)
+        .expect(404)
+        .then(({ body }) => {
+          expect(body.msg).toBe("this id does not exist");
+        });
+    });
+    test("status: 400, no inc_votes on request body", () => {
+      const update = {};
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(update)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request: body must not be empty");
+        });
+    });
+    test("status: 400, invalid inc_votes on body", () => {
+      const update = { inc_votes: "cats" };
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(update)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe("Bad request");
+        });
+    });
+    test.only("status: 400, body includes other properties", () => {
+      const update = { inc_votes: 1, name: "cat" };
+      return request(app)
+        .patch("/api/reviews/1")
+        .send(update)
+        .expect(400)
+        .then(({ body }) => {
+          expect(body.msg).toBe(
+            "Bad request: body must not contain other properties"
+          );
         });
     });
   });
