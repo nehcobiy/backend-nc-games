@@ -26,7 +26,10 @@ exports.fetchReviewById = (id) => {
 
   return db.query(query, [id]).then(({ rowCount, rows }) => {
     if (rowCount === 0) {
-      return Promise.reject({ status: 404 });
+      return Promise.reject({
+        status: 404,
+        msg: "this id does not exist",
+      });
     } else {
       return rows[0];
     }
@@ -41,7 +44,10 @@ exports.fetchCommentsByReviewId = (id) => {
 
   return db.query(query, [id]).then(({ rowCount, rows }) => {
     if (rowCount === 0) {
-      return Promise.reject({ status: 404 });
+      return Promise.reject({
+        status: 404,
+        msg: "no comments exist for this id",
+      });
     } else return rows;
   });
 };
@@ -54,3 +60,26 @@ exports.insertComment = (newComment, id) => {
       return rows[0];
     });
 };
+
+exports.updateReview = (body, id) => {
+  const query = `UPDATE reviews 
+  SET votes = $1 + votes 
+  WHERE review_id = $2 
+  RETURNING *`;
+  return db.query(query, [body.inc_votes, id]).then(({ rowCount, rows }) => {
+    if (rowCount === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "this id does not exist",
+      });
+    }
+    if (Object.keys(body).length > 1) {
+      return Promise.reject({
+        status: 400,
+        msg: "Bad request: body must not contain other properties",
+      });
+    } else return rows[0];
+  });
+};
+
+exports.fetchAllUsers = () => {};

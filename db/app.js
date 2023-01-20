@@ -6,6 +6,7 @@ const {
   getReviewById,
   getCommentsByReviewId,
   postComment,
+  patchReview,
 } = require("./controllers");
 
 app.get("/api/categories", getCategories);
@@ -20,6 +21,8 @@ app.use(express.json());
 
 app.post("/api/reviews/:review_id/comments", postComment);
 
+app.patch("/api/reviews/:review_id", patchReview);
+
 app.use((err, request, response, next) => {
   console.log(err);
   if (err.status && err.msg) {
@@ -32,15 +35,21 @@ app.use((err, request, response, next) => {
 app.use((err, request, response, next) => {
   console.log(err);
   if (err.code === "22P02") {
-    response.status(400).send({ msg: "Bad request: invalid input" });
+    response.status(400).send({ msg: "Bad request" });
   } else {
     next(err);
   }
 });
-
 app.use((err, request, response, next) => {
   console.log(err);
-  response.status(404).send({ msg: "input not found" });
+  if (err.code === "23502") {
+    response.status(400).send({ msg: "Bad request: body must not be empty" });
+  } else {
+    next(err);
+  }
+  app.use((err, request, response, next) => {
+    console.log(err);
+    response.status(404).send({ msg: "input not found" });
+  });
 });
-
 module.exports = app;

@@ -4,6 +4,7 @@ const {
   fetchReviewById,
   fetchCommentsByReviewId,
   insertComment,
+  updateReview,
 } = require("./model");
 
 exports.getCategories = (request, response, next) => {
@@ -49,6 +50,16 @@ exports.postComment = (request, response, next) => {
   ])
     .then((results) => {
       response.status(201).send(results[1]);
+    })
+    .catch(next);
+};
+
+exports.patchReview = (request, response, next) => {
+  const body = request.body;
+  const { review_id } = request.params;
+  Promise.all([fetchReviewById(review_id), updateReview(body, review_id)])
+    .then((results) => {
+      response.status(200).send({ review: results[1] });
     })
     .catch(next);
 };
