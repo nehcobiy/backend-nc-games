@@ -5,6 +5,7 @@ const {
   fetchCommentsByReviewId,
   insertComment,
   updateReview,
+  fetchAllUsers,
 } = require("./model");
 
 exports.getCategories = (request, response, next) => {
@@ -62,4 +63,10 @@ exports.patchReview = (request, response, next) => {
       response.status(200).send({ review: results[1] });
     })
     .catch(next);
+};
+
+exports.getUsers = (request, response, next) => {
+  fetchAllUsers().then((users) => {
+    response.status(200).send(users);
+  });
 };

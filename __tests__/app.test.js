@@ -3,6 +3,7 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+const { fetchAllUsers } = require("../db/model");
 require("jest-sorted");
 
 beforeEach(() => {
@@ -39,6 +40,7 @@ describe("app", () => {
         .get("/api/categories")
         .expect(200)
         .then(({ body }) => {
+          expect(body.length).toBeGreaterThan(0);
           body.forEach((category) => {
             expect(category).toHaveProperty("slug", expect.any(String));
             expect(category).toHaveProperty("description", expect.any(String));
@@ -170,6 +172,7 @@ describe("app", () => {
         .get("/api/reviews/2/comments")
         .expect(200)
         .then(({ body }) => {
+          expect(body.length).toBeGreaterThan(0);
           body.forEach((comment) => {
             expect(comment).toHaveProperty("comment_id", expect.any(Number));
             expect(comment).toHaveProperty("votes", expect.any(Number));
@@ -394,4 +397,38 @@ describe("app", () => {
         });
     });
   });
+  describe("GET: /api/users", () => {
+    test("returns an array of user objects", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(Array.isArray(body)).toBe(true);
+        });
+    });
+    test("each user object contains the correct properties", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.length).toBeGreaterThan(0);
+          body.forEach((user) => {
+            expect(user).toHaveProperty("username", expect.any(String));
+            expect(user).toHaveProperty("name", expect.any(String));
+            expect(user).toHaveProperty("avatar_url", expect.any(String));
+          });
+        });
+    });
+    test("all objects returned in array", () => {
+      return request(app)
+        .get("/api/users")
+        .expect(200)
+        .then(({ body }) => {
+          expect(body.length).toBe(4);
+        });
+    });
+  });
+  // describe("GET: /api/users, queries", () => {
+  //   test("");
+  // });
 });
