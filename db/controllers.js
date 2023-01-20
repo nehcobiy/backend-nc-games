@@ -6,6 +6,9 @@ const {
   insertComment,
   updateReview,
   fetchAllUsers,
+  searchByReviewCategory,
+  categoryExistence,
+  sortReviews,
 } = require("./model");
 
 exports.getCategories = (request, response, next) => {
@@ -17,11 +20,38 @@ exports.getCategories = (request, response, next) => {
 };
 
 exports.getReviews = (request, response, next) => {
-  fetchAllReviews()
-    .then((reviews) => {
-      response.status(200).send({ reviews });
-    })
-    .catch(next);
+  console.log(request.query);
+  if (request.query.hasOwnProperty("order")) {
+    const { sort_by } = request.query;
+    const { order } = request.query;
+    sortReviews(sort_by, order)
+      .then((reviews) => {
+        response.status(200).send({ reviews: reviews });
+      })
+      .catch(next);
+  }
+  if (request.query.hasOwnProperty("sort_by")) {
+    const { sort_by } = request.query;
+    sortReviews(sort_by)
+      .then((reviews) => {
+        response.status(200).send({ reviews: reviews });
+      })
+      .catch(next);
+  }
+  if (request.query.hasOwnProperty("category")) {
+    const { category } = request.query;
+    Promise.all([categoryExistence(category), searchByReviewCategory(category)])
+      .then((results) => {
+        response.status(200).send({ reviews: results[1] });
+      })
+      .catch(next);
+  } else {
+    fetchAllReviews()
+      .then((reviews) => {
+        response.status(200).send({ reviews });
+      })
+      .catch(next);
+  }
 };
 
 exports.getReviewById = (request, response, next) => {

@@ -1,3 +1,5 @@
+const e = require("express");
+const { response } = require("express");
 const db = require("./connection");
 
 exports.fetchAllCategories = () => {
@@ -88,4 +90,69 @@ exports.fetchAllUsers = () => {
     .then((response) => {
       return response.rows;
     });
+};
+
+exports.categoryExistence = (category) => {
+  return this.fetchAllCategories().then((allCategories) => {
+    let containCategory = false;
+    allCategories.forEach((existingCategory) => {
+      if (existingCategory.slug === category) {
+        containCategory = true;
+      }
+    });
+    if (containCategory === false) {
+      return Promise.reject({
+        status: 404,
+        msg: "category does not exist",
+      });
+    }
+  });
+};
+
+exports.searchByReviewCategory = (category) => {
+  const query = `SELECT * FROM reviews WHERE category = $1`;
+  return db.query(query, [category]).then((response) => {
+    if (response.rows.length === 0) {
+      return Promise.reject({
+        status: 404,
+        msg: "no reviews exists for this category",
+      });
+    } else {
+    }
+    return response.rows;
+  });
+};
+
+exports.sortReviews = (coloumn, order) => {
+  if (!coloumn) {
+    const query = `SELECT * FROM reviews ORDER BY created_at`;
+    return db.query(query).then((response) => {
+      return response.rows;
+    });
+  } else if (
+    ![
+      "title",
+      "designer",
+      "owner",
+      "review_img_url",
+      "review_body",
+      "category",
+      "created_at",
+      "votes",
+    ].includes(coloumn)
+  ) {
+    return Promise.reject({ status: 400, msg: "invalid sort query" });
+  } else if (coloumn && !order) {
+    const query = `SELECT * FROM reviews ORDER BY ${coloumn} DESC ;`;
+    return db.query(query).then((response) => {
+      return response.rows;
+    });
+  } else if (!["asc", "desc"].includes(order)) {
+    return Promise.reject({ status: 400, msg: "invalid order query" });
+  } else {
+    const query = `SELECT * FROM reviews ORDER BY ${coloumn} ${order};`;
+    return db.query(query).then((response) => {
+      return response.rows;
+    });
+  }
 };
