@@ -1,4 +1,5 @@
 const express = require("express");
+const cors = require("cors");
 const app = express();
 const {
   getCategories,
@@ -10,6 +11,7 @@ const {
   getUsers,
 } = require("./controllers");
 
+app.use(cors());
 app.get("/api/categories", getCategories);
 
 app.get("/api/reviews", getReviews);
