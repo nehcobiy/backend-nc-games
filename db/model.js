@@ -124,36 +124,34 @@ exports.searchByReviewCategory = (category) => {
 };
 
 exports.sortReviews = (coloumn, order) => {
-  if (coloumn === "comment_count" && !order) {
-    const query = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, reviews.designer,
+  let query = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, reviews.designer,
   COUNT(comments.review_id) AS comment_count
   FROM reviews
   LEFT JOIN comments ON reviews.review_id = comments.review_id
-  GROUP BY reviews.review_id
-  ORDER BY comment_count DESC;`;
-    return db.query(query).then((response) => {
-      return response.rows;
-    });
-  }
+  GROUP BY reviews.review_id`;
 
-  if (coloumn === "comment_count" && ["asc", "desc"].includes(order)) {
-    const query = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, reviews.designer,
-    COUNT(comments.review_id) AS comment_count
-    FROM reviews
-    LEFT JOIN comments ON reviews.review_id = comments.review_id
-    GROUP BY reviews.review_id
-    ORDER BY comment_count ${order};`;
-    return db.query(query).then((response) => {
+  if (["created_at", "votes", "comment_count"].includes(coloumn)) {
+    if (!order) {
+      const queryStr = query + ` ORDER BY ${coloumn} DESC;`;
+      return db.query(queryStr).then((response) => {
+        return response.rows;
+      });
+    } else {
+      if (!["asc", "desc"].includes(order)) {
+        return Promise.reject({ status: 400, msg: "invalid order query" });
+      } else {
+        const queryStr = query + ` ORDER BY ${coloumn} ${order};`;
+        return db.query(queryStr).then((response) => {
+          return response.rows;
+        });
+      }
+    }
+  } else if (!coloumn) {
+    const queryStr = query + " ORDER BY created_at DESC;";
+    return db.query(queryStr).then((response) => {
       return response.rows;
     });
-  }
-  if (!coloumn) {
-    const query = `SELECT * FROM reviews ORDER BY created_at DESC`;
-    return db.query(query).then((response) => {
-      return response.rows;
-    });
-  }
-  if (
+  } else if (
     ![
       "title",
       "designer",
@@ -167,20 +165,6 @@ exports.sortReviews = (coloumn, order) => {
     ].includes(coloumn)
   ) {
     return Promise.reject({ status: 400, msg: "invalid sort query" });
-  }
-  if (coloumn && !order) {
-    const query = `SELECT * FROM reviews ORDER BY ${coloumn} DESC ;`;
-    return db.query(query).then((response) => {
-      return response.rows;
-    });
-  }
-
-  if (!["asc", "desc"].includes(order)) {
-    return Promise.reject({ status: 400, msg: "invalid order query" });
   } else {
-    const query = `SELECT * FROM reviews ORDER BY ${coloumn} ${order};`;
-    return db.query(query).then((response) => {
-      return response.rows;
-    });
   }
 };

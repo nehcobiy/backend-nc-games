@@ -451,7 +451,6 @@ describe("app", () => {
                 "review_img_url",
                 expect.any(String)
               );
-              expect(review).toHaveProperty("review_body", expect.any(String));
               expect(review).toHaveProperty("category", expect.any(String));
               expect(review).toHaveProperty("created_at", expect.any(String));
               expect(review).toHaveProperty("votes", expect.any(Number));
@@ -517,7 +516,6 @@ describe("app", () => {
                 "review_img_url",
                 expect.any(String)
               );
-              expect(review).toHaveProperty("review_body", expect.any(String));
               expect(review).toHaveProperty("category", expect.any(String));
               expect(review).toHaveProperty("created_at", expect.any(String));
               expect(review).toHaveProperty("votes", expect.any(Number));
@@ -573,7 +571,6 @@ describe("app", () => {
             expect(review).toHaveProperty("designer", expect.any(String));
             expect(review).toHaveProperty("owner", expect.any(String));
             expect(review).toHaveProperty("review_img_url", expect.any(String));
-            expect(review).toHaveProperty("review_body", expect.any(String));
             expect(review).toHaveProperty("category", expect.any(String));
             expect(review).toHaveProperty("created_at", expect.any(String));
             expect(review).toHaveProperty("votes", expect.any(Number));

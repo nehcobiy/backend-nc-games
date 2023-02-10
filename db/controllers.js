@@ -20,22 +20,23 @@ exports.getCategories = (request, response, next) => {
 };
 
 exports.getReviews = (request, response, next) => {
-  if (request.query.hasOwnProperty("order")) {
-    const { sort_by } = request.query;
-    const { order } = request.query;
-    sortReviews(sort_by, order)
-      .then((reviews) => {
-        response.status(200).send({ reviews: reviews });
-      })
-      .catch(next);
-  }
   if (request.query.hasOwnProperty("sort_by")) {
-    const { sort_by } = request.query;
-    sortReviews(sort_by)
-      .then((reviews) => {
-        response.status(200).send({ reviews: reviews });
-      })
-      .catch(next);
+    if (request.query.hasOwnProperty("order")) {
+      const { sort_by } = request.query;
+      const { order } = request.query;
+      sortReviews(sort_by, order)
+        .then((reviews) => {
+          response.status(200).send({ reviews: reviews });
+        })
+        .catch(next);
+    } else {
+      const { sort_by } = request.query;
+      sortReviews(sort_by)
+        .then((reviews) => {
+          response.status(200).send({ reviews: reviews });
+        })
+        .catch(next);
+    }
   }
   if (request.query.hasOwnProperty("category")) {
     const { category } = request.query;
@@ -44,7 +45,10 @@ exports.getReviews = (request, response, next) => {
         response.status(200).send({ reviews: results[1] });
       })
       .catch(next);
-  } else {
+  } else if (
+    !request.query.hasOwnProperty("sort_by") &&
+    !request.query.hasOwnProperty("category")
+  ) {
     fetchAllReviews()
       .then((reviews) => {
         response.status(200).send({ reviews });
