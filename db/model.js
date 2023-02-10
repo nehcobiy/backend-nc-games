@@ -143,14 +143,24 @@ exports.sortReviews = (coloumn, order) => {
   ) {
     return Promise.reject({ status: 400, msg: "invalid sort query" });
   } else if (coloumn && !order) {
-    const query = `SELECT * FROM reviews ORDER BY ${coloumn} DESC ;`;
+    const query = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, reviews.designer,
+    COUNT(comments.review_id) AS comment_count
+    FROM reviews
+    LEFT JOIN comments ON reviews.review_id = comments.review_id
+    GROUP BY reviews.review_id
+    ORDER BY ${coloumn} DESC ;`;
     return db.query(query).then((response) => {
       return response.rows;
     });
   } else if (!["asc", "desc"].includes(order)) {
     return Promise.reject({ status: 400, msg: "invalid order query" });
   } else {
-    const query = `SELECT * FROM reviews ORDER BY ${coloumn} ${order};`;
+    const query = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, reviews.designer,
+    COUNT(comments.review_id) AS comment_count
+    FROM reviews
+    LEFT JOIN comments ON reviews.review_id = comments.review_id
+    GROUP BY reviews.review_id
+    ORDER BY ${coloumn} ${order};`;
     return db.query(query).then((response) => {
       return response.rows;
     });
