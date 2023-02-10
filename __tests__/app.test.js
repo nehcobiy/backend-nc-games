@@ -537,6 +537,7 @@ describe("app", () => {
           .get("/api/reviews/?sort_by=votes")
           .expect(200)
           .then(({ body }) => {
+            console.log(body.reviews);
             expect(body.reviews).toBeSortedBy("votes", { descending: true });
           });
       });

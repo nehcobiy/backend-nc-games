@@ -147,7 +147,7 @@ exports.sortReviews = (coloumn, order) => {
       return response.rows;
     });
   }
-  if (!coloumn) {
+  if (coloumn.length === 0) {
     const query = `SELECT * FROM reviews ORDER BY created_at`;
     return db.query(query).then((response) => {
       return response.rows;
