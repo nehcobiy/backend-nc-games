@@ -529,7 +529,9 @@ describe("app", () => {
           .get("/api/reviews/?sort_by")
           .expect(200)
           .then(({ body }) => {
-            expect(body.reviews).toBeSortedBy("created_at");
+            expect(body.reviews).toBeSortedBy("created_at", {
+              descending: true,
+            });
           });
       });
       test("sort_by votes", () => {
