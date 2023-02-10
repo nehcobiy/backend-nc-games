@@ -517,7 +517,8 @@ describe("app", () => {
                 "review_img_url",
                 expect.any(String)
               );
-              expect(review).toHaveProperty("review_body", expect.any(String));
+              expect(review).toHaveProperty("review_body");
+              expect(review).toHaveProperty("comment_count");
               expect(review).toHaveProperty("category", expect.any(String));
               expect(review).toHaveProperty("created_at", expect.any(String));
               expect(review).toHaveProperty("votes", expect.any(Number));
