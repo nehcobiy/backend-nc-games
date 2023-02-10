@@ -494,7 +494,7 @@ describe("app", () => {
           });
       });
     });
-    describe.only("sort_by query", () => {
+    describe("sort_by query", () => {
       test("responds with an array of reviews", () => {
         return request(app)
           .get("/api/reviews/?sort_by=created_at")
