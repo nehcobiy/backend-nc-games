@@ -139,11 +139,17 @@ exports.sortReviews = (coloumn, order) => {
       "category",
       "created_at",
       "votes",
+      "comment_count",
     ].includes(coloumn)
   ) {
     return Promise.reject({ status: 400, msg: "invalid sort query" });
   } else if (coloumn && !order) {
-    const query = `SELECT * FROM reviews ORDER BY ${coloumn} DESC ;`;
+    const query = `SELECT reviews.owner, reviews.title, reviews.review_id, reviews.category, reviews.review_img_url, reviews.created_at, reviews.votes, reviews.designer, reviews.review_body,
+  COUNT(comments.review_id) AS comment_count
+  FROM reviews
+  LEFT JOIN comments ON reviews.review_id = comments.review_id
+  GROUP BY reviews.review_id
+  ORDER BY ${coloumn} DESC`;
     return db.query(query).then((response) => {
       return response.rows;
     });
