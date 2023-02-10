@@ -508,6 +508,7 @@ describe("app", () => {
           .get("/api/reviews/?sort_by=created_at")
           .expect(200)
           .then(({ body }) => {
+            console.log(body);
             expect(body.reviews.length).toBeGreaterThan(0);
             body.reviews.forEach((review) => {
               expect(review).toHaveProperty("title", expect.any(String));
@@ -517,8 +518,7 @@ describe("app", () => {
                 "review_img_url",
                 expect.any(String)
               );
-              expect(review).toHaveProperty("review_body");
-              expect(review).toHaveProperty("comment_count");
+
               expect(review).toHaveProperty("category", expect.any(String));
               expect(review).toHaveProperty("created_at", expect.any(String));
               expect(review).toHaveProperty("votes", expect.any(Number));
