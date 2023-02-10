@@ -20,7 +20,6 @@ exports.getCategories = (request, response, next) => {
 };
 
 exports.getReviews = (request, response, next) => {
-  console.log(request.query);
   if (request.query.hasOwnProperty("order")) {
     const { sort_by } = request.query;
     const { order } = request.query;
