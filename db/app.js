@@ -10,6 +10,8 @@ const {
   patchReview,
   getUsers,
   deleteComment,
+  getApi,
+  getInitial,
 } = require("./controllers");
 
 app.use(cors());
@@ -30,6 +32,10 @@ app.patch("/api/reviews/:review_id", patchReview);
 app.get("/api/users", getUsers);
 
 app.delete("/api/comments/:comment_id", deleteComment);
+
+app.get("/api", getApi);
+
+app.get("/", getInitial);
 
 app.use((err, request, response, next) => {
   console.log(err);

@@ -3,6 +3,8 @@ const request = require("supertest");
 const db = require("../db/connection");
 const seed = require("../db/seeds/seed");
 const testData = require("../db/data/test-data/index");
+const { endpoints } = require("../endpoints");
+
 require("jest-sorted");
 
 beforeEach(() => {
@@ -18,12 +20,12 @@ describe("app", () => {
     test("status: 200", () => {
       return request(app).get("/api/categories").expect(200);
     });
-    test("responds with an array", () => {
+    test("responds with categories object containing categories array", () => {
       return request(app)
         .get("/api/categories")
         .expect(200)
         .then(({ body }) => {
-          expect(Array.isArray(body)).toBe(true);
+          expect(Array.isArray(body.categories)).toBe(true);
         });
     });
     test("all objects returned in array", () => {
@@ -31,16 +33,16 @@ describe("app", () => {
         .get("/api/categories")
         .expect(200)
         .then(({ body }) => {
-          expect(body.length).toBe(4);
+          expect(body.categories.length).toBe(4);
         });
     });
     test("array of category objects contain the correct properties", () => {
       return request(app)
         .get("/api/categories")
         .expect(200)
-        .then(({ body }) => {
-          expect(body.length).toBeGreaterThan(0);
-          body.forEach((category) => {
+        .then(({ body: { categories } }) => {
+          expect(categories.length).toBeGreaterThan(0);
+          categories.forEach((category) => {
             expect(category).toHaveProperty("slug", expect.any(String));
             expect(category).toHaveProperty("description", expect.any(String));
           });
@@ -158,21 +160,21 @@ describe("app", () => {
     test("status: 200", () => {
       return request(app).get("/api/reviews/2/comments").expect(200);
     });
-    test("responds with an array", () => {
+    test("responds with comments object containing comments array", () => {
       return request(app)
         .get("/api/reviews/2/comments")
         .expect(200)
-        .then(({ body }) => {
-          expect(Array.isArray(body)).toBe(true);
+        .then(({ body: { comments } }) => {
+          expect(Array.isArray(comments)).toBe(true);
         });
     });
     test("comment object contains the correct properties", () => {
       return request(app)
         .get("/api/reviews/2/comments")
         .expect(200)
-        .then(({ body }) => {
-          expect(body.length).toBeGreaterThan(0);
-          body.forEach((comment) => {
+        .then(({ body: { comments } }) => {
+          expect(comments.length).toBeGreaterThan(0);
+          comments.forEach((comment) => {
             expect(comment).toHaveProperty("comment_id", expect.any(Number));
             expect(comment).toHaveProperty("votes", expect.any(Number));
             expect(comment).toHaveProperty("created_at", expect.any(String));
@@ -186,16 +188,16 @@ describe("app", () => {
       return request(app)
         .get("/api/reviews/2/comments")
         .expect(200)
-        .then(({ body }) => {
-          expect(body.length).toBe(3);
+        .then(({ body: { comments } }) => {
+          expect(comments.length).toBe(3);
         });
     });
     test("comments sorted from most recent", () => {
       return request(app)
         .get("/api/reviews/2/comments")
         .expect(200)
-        .then(({ body }) => {
-          expect(body).toBeSortedBy("created_at", { descending: true });
+        .then(({ body: { comments } }) => {
+          expect(comments).toBeSortedBy("created_at", { descending: true });
         });
     });
     test("status:400, invalid path", () => {
@@ -397,21 +399,21 @@ describe("app", () => {
     });
   });
   describe("GET: /api/users", () => {
-    test("returns an array of user objects", () => {
+    test("returns an object containing array of user objects", () => {
       return request(app)
         .get("/api/users")
         .expect(200)
-        .then(({ body }) => {
-          expect(Array.isArray(body)).toBe(true);
+        .then(({ body: { users } }) => {
+          expect(Array.isArray(users)).toBe(true);
         });
     });
     test("each user object contains the correct properties", () => {
       return request(app)
         .get("/api/users")
         .expect(200)
-        .then(({ body }) => {
-          expect(body.length).toBeGreaterThan(0);
-          body.forEach((user) => {
+        .then(({ body: { users } }) => {
+          expect(users.length).toBeGreaterThan(0);
+          users.forEach((user) => {
             expect(user).toHaveProperty("username", expect.any(String));
             expect(user).toHaveProperty("name", expect.any(String));
             expect(user).toHaveProperty("avatar_url", expect.any(String));
@@ -422,8 +424,8 @@ describe("app", () => {
       return request(app)
         .get("/api/users")
         .expect(200)
-        .then(({ body }) => {
-          expect(body.length).toBe(4);
+        .then(({ body: { users } }) => {
+          expect(users.length).toBe(4);
         });
     });
   });
@@ -605,9 +607,20 @@ describe("app", () => {
     });
   });
 
-  describe.only("DELETE /api/comments/:comment_id", () => {
+  describe("DELETE /api/comments/:comment_id", () => {
     test("status: 204", () => {
       return request(app).delete("/api/comments/2").expect(204);
+    });
+  });
+
+  describe("GET /api", () => {
+    test("returns the correct object containing instructions", () => {
+      return request(app)
+        .get("/api")
+        .expect(200)
+        .then((body) => {
+          expect(body.text).toEqual(JSON.stringify(endpoints));
+        });
     });
   });
 });
