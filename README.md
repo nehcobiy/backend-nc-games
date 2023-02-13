@@ -2,9 +2,11 @@
 
 ## Instructions
 
-Link to hosted version: [wwww.nc-games-backend-project.onrender.com/api/users]()
+Link to hosted version: [wwww.nc-games-backend-project.onrender.com]()
 
-In order to run this project on your local machine, connections to the correct databases need to be made locally.
+This is my Northcoders back end project. I have built an API, consisting of boardgame reviews, using JavaScript and Node.js. The databases are PSQL, which are interacted with using node-postgres.
+
+In order to run this project on your local machine, after cloning, connections to the correct databases need to be made locally.
 
 1. Set up a `.env.development` and a `.env.test file`.
 2. Add the text `PGDATABASE = nc_games` and `PGDATABASE = nc_games_test` inside of each respective file.

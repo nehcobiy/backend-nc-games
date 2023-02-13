@@ -11,6 +11,7 @@ const {
   getUsers,
   deleteComment,
   getApi,
+  getInitial,
 } = require("./controllers");
 
 app.use(cors());
@@ -33,6 +34,8 @@ app.get("/api/users", getUsers);
 app.delete("/api/comments/:comment_id", deleteComment);
 
 app.get("/api", getApi);
+
+app.get("/", getInitial);
 
 app.use((err, request, response, next) => {
   console.log(err);

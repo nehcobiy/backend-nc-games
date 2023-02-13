@@ -115,5 +115,13 @@ exports.deleteComment = (request, response) => {
 };
 
 exports.getApi = (request, response) => {
-  response.status(200).send(endpoints);
+  response.status(200).json(endpoints);
+};
+
+exports.getInitial = (request, response) => {
+  response
+    .status(200)
+    .send({
+      message: "go to path /api to see description of available endpoints",
+    });
 };
