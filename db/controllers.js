@@ -12,10 +12,12 @@ const {
   removeComment,
 } = require("./model");
 
+const { endpoints } = require("../endpoints");
+
 exports.getCategories = (request, response, next) => {
   fetchAllCategories()
     .then((categories) => {
-      response.status(200).send(categories);
+      response.status(200).send({ categories: categories });
     })
     .catch(next);
 };
@@ -71,7 +73,7 @@ exports.getCommentsByReviewId = (request, response, next) => {
   const { review_id } = request.params;
   fetchCommentsByReviewId(review_id)
     .then((comments) => {
-      response.status(200).send(comments);
+      response.status(200).send({ comments: comments });
     })
     .catch(next);
 };
@@ -101,7 +103,7 @@ exports.patchReview = (request, response, next) => {
 
 exports.getUsers = (request, response, next) => {
   fetchAllUsers().then((users) => {
-    response.status(200).send(users);
+    response.status(200).send({ users: users });
   });
 };
 
@@ -110,4 +112,8 @@ exports.deleteComment = (request, response) => {
   removeComment(comment_id).then(() => {
     response.status(204).send();
   });
+};
+
+exports.getApi = (request, response) => {
+  response.status(200).send(endpoints);
 };
