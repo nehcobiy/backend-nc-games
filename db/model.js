@@ -168,3 +168,13 @@ exports.sortReviews = (coloumn, order) => {
   } else {
   }
 };
+
+exports.removeComment = (commentId) => {
+  return db
+    .query(`DELETE FROM comments WHERE comment_id = $1 RETURNING comment_id;`, [
+      commentId,
+    ])
+    .then((response) => {
+      return response.rows[0];
+    });
+};

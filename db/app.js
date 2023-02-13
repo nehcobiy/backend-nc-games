@@ -9,6 +9,7 @@ const {
   postComment,
   patchReview,
   getUsers,
+  deleteComment,
 } = require("./controllers");
 
 app.use(cors());
@@ -27,6 +28,8 @@ app.post("/api/reviews/:review_id/comments", postComment);
 app.patch("/api/reviews/:review_id", patchReview);
 
 app.get("/api/users", getUsers);
+
+app.delete("/api/comments/:comment_id", deleteComment);
 
 app.use((err, request, response, next) => {
   console.log(err);
