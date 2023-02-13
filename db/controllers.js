@@ -9,6 +9,7 @@ const {
   searchByReviewCategory,
   categoryExistence,
   sortReviews,
+  removeComment,
 } = require("./model");
 
 exports.getCategories = (request, response, next) => {
@@ -101,5 +102,12 @@ exports.patchReview = (request, response, next) => {
 exports.getUsers = (request, response, next) => {
   fetchAllUsers().then((users) => {
     response.status(200).send(users);
+  });
+};
+
+exports.deleteComment = (request, response) => {
+  const { comment_id } = request.params;
+  removeComment(comment_id).then(() => {
+    response.status(204).send();
   });
 };

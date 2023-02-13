@@ -537,7 +537,6 @@ describe("app", () => {
           .get("/api/reviews/?sort_by=votes")
           .expect(200)
           .then(({ body }) => {
-            console.log(body.reviews);
             expect(body.reviews).toBeSortedBy("votes", { descending: true });
           });
       });
@@ -550,56 +549,65 @@ describe("app", () => {
           });
       });
     });
-  });
-  describe("order query", () => {
-    test("responds with an array of reviews", () => {
-      return request(app)
-        .get("/api/reviews/?sort_by&order=desc")
-        .expect(200)
-        .then(({ body }) => {
-          expect(Array.isArray(body.reviews)).toBe(true);
-        });
-    });
-    test("each review object contains the right properties", () => {
-      return request(app)
-        .get("/api/reviews/?sort_by&order=desc")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.reviews.length).toBeGreaterThan(0);
-          body.reviews.forEach((review) => {
-            expect(review).toHaveProperty("title", expect.any(String));
-            expect(review).toHaveProperty("designer", expect.any(String));
-            expect(review).toHaveProperty("owner", expect.any(String));
-            expect(review).toHaveProperty("review_img_url", expect.any(String));
-            expect(review).toHaveProperty("category", expect.any(String));
-            expect(review).toHaveProperty("created_at", expect.any(String));
-            expect(review).toHaveProperty("votes", expect.any(Number));
+    describe("order query", () => {
+      test("responds with an array of reviews", () => {
+        return request(app)
+          .get("/api/reviews/?sort_by&order=desc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(Array.isArray(body.reviews)).toBe(true);
           });
-        });
+      });
+      test("each review object contains the right properties", () => {
+        return request(app)
+          .get("/api/reviews/?sort_by&order=desc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.reviews.length).toBeGreaterThan(0);
+            body.reviews.forEach((review) => {
+              expect(review).toHaveProperty("title", expect.any(String));
+              expect(review).toHaveProperty("designer", expect.any(String));
+              expect(review).toHaveProperty("owner", expect.any(String));
+              expect(review).toHaveProperty(
+                "review_img_url",
+                expect.any(String)
+              );
+              expect(review).toHaveProperty("category", expect.any(String));
+              expect(review).toHaveProperty("created_at", expect.any(String));
+              expect(review).toHaveProperty("votes", expect.any(Number));
+            });
+          });
+      });
+      test("defaults to desc", () => {
+        return request(app)
+          .get("/api/reviews/?sort_by=votes&order")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.reviews).toBeSortedBy("votes", { descending: true });
+          });
+      });
+      test("asc order", () => {
+        return request(app)
+          .get("/api/reviews/?sort_by=votes&order=asc")
+          .expect(200)
+          .then(({ body }) => {
+            expect(body.reviews).toBeSortedBy("votes", { ascending: true });
+          });
+      });
+      test("status:400, order not asc or desc", () => {
+        return request(app)
+          .get("/api/reviews/?sort_by=votes&order=cats")
+          .expect(400)
+          .then(({ body }) => {
+            expect(body.msg).toBe("invalid order query");
+          });
+      });
     });
-    test("defaults to desc", () => {
-      return request(app)
-        .get("/api/reviews/?sort_by=votes&order")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.reviews).toBeSortedBy("votes", { descending: true });
-        });
-    });
-    test("asc order", () => {
-      return request(app)
-        .get("/api/reviews/?sort_by=votes&order=asc")
-        .expect(200)
-        .then(({ body }) => {
-          expect(body.reviews).toBeSortedBy("votes", { ascending: true });
-        });
-    });
-    test("status:400, order not asc or desc", () => {
-      return request(app)
-        .get("/api/reviews/?sort_by=votes&order=cats")
-        .expect(400)
-        .then(({ body }) => {
-          expect(body.msg).toBe("invalid order query");
-        });
+  });
+
+  describe.only("DELETE /api/comments/:comment_id", () => {
+    test("status: 204", () => {
+      return request(app).delete("/api/comments/2").expect(204);
     });
   });
 });
